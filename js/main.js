@@ -172,7 +172,8 @@ d3.csv("heart_2020_cleaned.csv")
 
 
 
-            var x0  = d3.scaleBand().rangeRound([0, width], .5);
+            var x0  = d3.scaleBand().rangeRound([0, width], .5)
+                .padding(.05);
             var x1  = d3.scaleBand();
             var y   = d3.scaleLinear().rangeRound([height, 0]);
 
@@ -274,7 +275,8 @@ d3.csv("heart_2020_cleaned.csv")
 
 
 
-                var x0  = d3.scaleBand().rangeRound([0, width], .5);
+                var x0  = d3.scaleBand().rangeRound([0, width], .5)
+                    .padding(.05);
                 var x1  = d3.scaleBand();
                 var y   = d3.scaleLinear().rangeRound([height, 0]);
 
