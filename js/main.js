@@ -68,8 +68,6 @@ d3.csv("heart_2020_cleaned.csv")
         })
 
 
-console.log(data.filter(d=> d.HeartDisease == 'Yes' && d.Sex =='Male').length)
-
         function groupedbar(){
 
 
@@ -89,6 +87,83 @@ console.log(data.filter(d=> d.HeartDisease == 'Yes' && d.Sex =='Male').length)
                         ]
                 }]
 
+            const groupData2 =[
+
+                {
+                    key: 'Poor Health', values:
+                        [
+                            {grpName:'Heart Disease', grpValue:data.filter(d => d.HeartDisease == 'Yes' && d.GenHealth == 'Poor').length},
+                            {grpName:'No Heart Disease', grpValue:data.filter(d => d.HeartDisease == 'No' && d.GenHealth == 'Poor').length},
+
+                        ]
+                },
+                    { key: 'Fair Health', values:
+                        [
+                            {grpName:'Heart Disease', grpValue:data.filter(d => d.HeartDisease == 'Yes' && d.GenHealth == 'Fair').length},
+                            {grpName:'No Heart Disease', grpValue:data.filter(d => d.HeartDisease == 'No' && d.GenHealth == 'Fair').length},
+
+                        ]
+                },
+                {
+                    key: 'Good Health', values:
+                        [
+                            {
+                                grpName: 'Heart Disease', grpValue: data.filter(d => d.HeartDisease == 'Yes' && d.GenHealth == 'Good').length},
+                            {
+                                grpName: 'No Heart Disease', grpValue: data.filter(d => d.HeartDisease == 'No' && d.GenHealth == 'Good').length},
+
+                        ]
+                },
+                {
+                    key: 'Very Good Health', values:
+                        [
+                            {
+                                grpName: 'Heart Disease', grpValue: data.filter(d => d.HeartDisease == 'Yes' && d.GenHealth == 'Very good').length},
+                            {
+                                grpName: 'No Heart Disease', grpValue: data.filter(d => d.HeartDisease == 'No' && d.GenHealth == 'Very good').length},
+
+                        ]
+                },
+                {
+                    key: 'Excellent Health', values:
+                        [
+                            {
+                                grpName: 'Heart Disease', grpValue: data.filter(d => d.HeartDisease == 'Yes' && d.GenHealth == 'Excellent').length},
+                            {
+                                grpName: 'No Heart Disease', grpValue: data.filter(d => d.HeartDisease == 'No' && d.GenHealth == 'Excellent').length},
+
+                        ]
+                }
+
+                ]
+
+            const groupData3 =[
+
+                {
+                    key: 'White', values:
+                        [
+                            {grpName:'Heart Disease', grpValue:data.filter(d => d.HeartDisease == 'Yes' && d.Race == 'White').length},
+                            {grpName:'No Heart Disease', grpValue:data.filter(d => d.HeartDisease == 'No' && d.Race == 'White').length},
+
+                        ]
+                },
+                { key: 'Black', values:
+                        [
+                            {grpName:'Heart Disease', grpValue:data.filter(d => d.HeartDisease == 'Yes' && d.Race == 'Black').length},
+                            {grpName:'No Heart Disease', grpValue:data.filter(d => d.HeartDisease == 'No' && d.Race == 'Black').length},
+
+                        ]
+                },
+                {
+                    key: 'Other', values:
+                        [
+                            {
+                                grpName: 'Heart Disease', grpValue: data.filter(d => d.HeartDisease == 'Yes' && d.Race == 'Other').length},
+                            {
+                                grpName: 'No Heart Disease', grpValue: data.filter(d => d.HeartDisease == 'No' && d.Race == 'Other').length},
+
+                        ]
+                }]
 
 
             var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -108,14 +183,14 @@ console.log(data.filter(d=> d.HeartDisease == 'Yes' && d.Sex =='Male').length)
 
             const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-            var svg = d3.select('body').append("svg")
+            var svg = d3.select('#groupedbar').append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             var categoriesNames = groupData.map(function(d) { return d.key; });
-            var rateNames       = groupData[0].values.map(function(d) { return d.grpName; });
+            var rateNames = groupData[0].values.map(function(d) { return d.grpName; });
 
             x0.domain(categoriesNames);
             x1.domain(rateNames).rangeRound([0, x0.bandwidth()]);
@@ -137,7 +212,7 @@ console.log(data.filter(d=> d.HeartDisease == 'Yes' && d.Sex =='Male').length)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .style('font-weight','bold')
-                .text("Value");
+                .text("Count");
 
             svg.select('.y').transition().duration(500).delay(1300).style('opacity','1');
 
@@ -189,6 +264,95 @@ console.log(data.filter(d=> d.HeartDisease == 'Yes' && d.Sex =='Male').length)
             legend.transition().duration(500).delay(function(d,i){ return 1300 + 100 * i; }).style("opacity","1");
 
 
+            function updateGroup(newData){
+                d3.select("#groupedbar").selectAll("*").remove()
+
+
+                var margin = {top: 20, right: 20, bottom: 30, left: 40},
+                    width = 800 - margin.left - margin.right,
+                    height = 400 - margin.top - margin.bottom;
+
+
+
+                var x0  = d3.scaleBand().rangeRound([0, width], .5);
+                var x1  = d3.scaleBand();
+                var y   = d3.scaleLinear().rangeRound([height, 0]);
+
+                var xAxis = d3.axisBottom().scale(x0)
+                    .tickValues(newData.map(d=>d.key));
+
+                var yAxis = d3.axisLeft().scale(y);
+
+                const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+
+                var svg = d3.select('#groupedbar').append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+                var categoriesNames = newData.map(function(d) { return d.key; });
+                var rateNames = newData[0].values.map(function(d) { return d.grpName; });
+
+                x0.domain(categoriesNames);
+                x1.domain(rateNames).rangeRound([0, x0.bandwidth()]);
+                y.domain([0, d3.max(newData, function(key) { return d3.max(key.values, function(d) { return d.grpValue; }); })]);
+
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis);
+
+
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .style('opacity','0')
+                    .call(yAxis)
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .style('font-weight','bold')
+                    .text("Count");
+
+                svg.select('.y').transition().duration(500).delay(1300).style('opacity','1');
+
+                var slice = svg.selectAll(".slice")
+                    .data(newData)
+                    .enter().append("g")
+                    .attr("class", "g")
+                    .attr("transform",function(d) { return "translate(" + x0(d.key) + ",0)"; });
+
+                slice.selectAll("rect")
+                    .data(function(d) { return d.values; })
+                    .enter().append("rect")
+                    .attr("width", x1.bandwidth())
+                    .attr("x", function(d) { return x1(d.grpName); })
+                    .style("fill", function(d) { return color(d.grpName) })
+                    .attr("y", function(d) { return y(0); })
+                    .attr("height", function(d) { return height - y(0); })
+
+
+
+                slice.selectAll("rect")
+                    .transition()
+                    .delay(function (d) {return Math.random()*1000;})
+                    .duration(1000)
+                    .attr("y", function(d) { return y(d.grpValue); })
+                    .attr("height", function(d) { return height - y(d.grpValue); });
+
+            }
+
+            d3.select('#gdrop')
+                .on('change', function() {
+                    var newData = eval(d3.select(this).property('value'));
+                    console.log(newData)
+                    updateGroup(newData);
+                });
 
 
         }
