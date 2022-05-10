@@ -1,4 +1,4 @@
-class Scatterplot {
+class parallel {
 
     /**
      * Class constructor with basic chart configuration
@@ -90,7 +90,7 @@ class Scatterplot {
         let vis = this;
 
         // Specificy accessor functions
-        vis.colorValue = d => d.AgeCategory;
+        vis.colorValue = d => d.HeartDisease;
         vis.xValue = d => d.x;
         vis.yValue = d => d.y;
 
@@ -110,42 +110,40 @@ class Scatterplot {
     renderVis() {
         let vis = this;
 
-        // Add circles
-        const circles = vis.chart.selectAll('.point')
-            .data(vis.data, d => d.AgeCategory)
-            .join('circle')
-            .attr('class', 'point')
-            .attr('r', 4)
-            .attr('cy', d => vis.yScale(vis.yValue(d)))
-            .attr('cx', d => vis.xScale(vis.xValue(d)))
-            .attr('fill', d => vis.config.colorScale(vis.colorValue(d)))
-            .style('opacity', d => {
-                if (d.HeartDisease == 'Yes')
-                    return 1
-                else
-                    return .07
-            });
+        // Draw the lines
+        svg
+            .selectAll("myPath")
+            .data(data)
+            .enter()
+            .append("path")
+            .attr("class", function (d) { return "line " + d.Species } ) // 2 class for each line: 'line' and the group name
+            .attr("d",  path)
+            .style("fill", "none" )
+            .style("stroke", function(d){ return( color(d.HeartDisease))} )
+            .style("opacity", 0.5)
+            .on("mouseover", highlight)
+            .on("mouseleave", doNotHighlight )
+
+        // Draw the axis:
+        svg.selectAll("myAxis")
+            // For each dimension of the dataset I add a 'g' element:
+            .data(dimensions).enter()
+            .append("g")
+            .attr("class", "axis")
+            // I translate this element to its right position on the x axis
+            .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+            // And I build the axis with the call function
+            .each(function(d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])); })
+            // Add axis title
+            .append("text")
+            .style("text-anchor", "middle")
+            .attr("y", -9)
+            .text(function(d) { return d; })
+            .style("fill", "black")
 
 
-        // Tooltip event listeners
-        circles
-            .on('mouseover', (event,d) => {
-                d3.select('#tooltip')
-                    .style('display', 'block')
-                    .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
-                    .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
-                    .html(`
-              <div class="tooltip-title">${d.AgeCategory}</div>
-              <div><i>Has had heart disease? ${d.HeartDisease}</i></div>
-              <ul>
-                <li>${d.x}, ${d.y} </li>
-              </ul>
-            `);
-            })
-            .on('mouseleave', () => {
-                d3.select('#tooltip').style('display', 'none');
-            });
-        vis.xAxisG
+
+    vis.xAxisG
             .call(vis.xAxis)
             .call(g => g.select('.domain').remove());
 

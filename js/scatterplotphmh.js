@@ -1,4 +1,4 @@
-class Scatterplot {
+class Scatterplotphmh {
 
     /**
      * Class constructor with basic chart configuration
@@ -9,7 +9,6 @@ class Scatterplot {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            colorScale: _config.colorScale,
             containerWidth: _config.containerWidth || 500,
             containerHeight: _config.containerHeight || 300,
             margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 35},
@@ -73,14 +72,14 @@ class Scatterplot {
             .attr('x', vis.width + 10)
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
-            .text('');
+            .text('Last 30 days with bad physical health');
 
         vis.svg.append('text')
             .attr('class', 'axis-title')
             .attr('x', 0)
             .attr('y', 5)
             .attr('dy', '.71em')
-            .text('');
+            .text('Last 30 days with bad mental health');
     }
 
     /**
@@ -90,16 +89,12 @@ class Scatterplot {
         let vis = this;
 
         // Specificy accessor functions
-        vis.colorValue = d => d.AgeCategory;
-        vis.xValue = d => d.x;
-        vis.yValue = d => d.y;
+        vis.xValue = d => d.PhysicalHealth;
+        vis.yValue = d => d.MentalHealth;
 
         // Set the scale input domains
         vis.xScale.domain([0, d3.max(vis.data, vis.xValue)]);
         vis.yScale.domain([0, d3.max(vis.data, vis.yValue)]);
-
-
-
 
         vis.renderVis();
     }
@@ -109,22 +104,21 @@ class Scatterplot {
      */
     renderVis() {
         let vis = this;
-
+        var symbol = d3.symbol();
         // Add circles
         const circles = vis.chart.selectAll('.point')
-            .data(vis.data, d => d.AgeCategory)
+            .data(vis.data, d => d.HeartDisease)
             .join('circle')
             .attr('class', 'point')
             .attr('r', 4)
             .attr('cy', d => vis.yScale(vis.yValue(d)))
             .attr('cx', d => vis.xScale(vis.xValue(d)))
-            .attr('fill', d => vis.config.colorScale(vis.colorValue(d)))
-            .style('opacity', d => {
+            .attr('fill', d => {
                 if (d.HeartDisease == 'Yes')
-                    return 1
+                    return '#F50112'
                 else
-                    return .07
-            });
+                    return '#0113F5'
+            })
 
 
         // Tooltip event listeners
@@ -138,13 +132,17 @@ class Scatterplot {
               <div class="tooltip-title">${d.AgeCategory}</div>
               <div><i>Has had heart disease? ${d.HeartDisease}</i></div>
               <ul>
-                <li>${d.x}, ${d.y} </li>
+                <li>${d.PhysicalHealth} days of bad Physical Health</li>
+                <li>${d.MentalHealth} days of bad mental Health</li>
               </ul>
             `);
             })
             .on('mouseleave', () => {
                 d3.select('#tooltip').style('display', 'none');
             });
+
+        // Update the axes/gridlines
+        // We use the second .call() to remove the axis and just show gridlines
         vis.xAxisG
             .call(vis.xAxis)
             .call(g => g.select('.domain').remove());
@@ -153,5 +151,4 @@ class Scatterplot {
             .call(vis.yAxis)
             .call(g => g.select('.domain').remove())
     }
-
 }
